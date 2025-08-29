@@ -1,0 +1,30 @@
+---
+title: "STAT400_hw01"
+author: "Andi Mellyn"
+date: "2025-08-29"
+output: pdf_document
+---
+
+## Due date: Sept. 9 by 4pm
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+## load the data
+library(ggplot2)
+
+```
+
+```{r}
+## take a look
+head(diamonds)
+
+```
+
+#################################
+## Continue your analysis here ##
+#################################
+
+
