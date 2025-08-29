@@ -5,7 +5,7 @@ date: "2025-08-29"
 output: pdf_document
 ---
 
-## Due date: Sept. 9 by 4pm
+## Due date: Sept. 9 by 4pm.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
