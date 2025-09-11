@@ -1,0 +1,257 @@
+---
+title: "STAT400_hw01"
+author: "Andi Mellyn"
+date: "2025-08-29"
+output: pdf_document
+---
+\colorlet{shadecolor}{gray!10}
+
+## Due date: Sept. 9 by 4pm.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages("ggplot2")
+library(ggplot2)
+```
+
+
+```{r, include=FALSE}
+## take a look
+data(diamonds)
+head(diamonds)
+
+```
+
+```{r, include=FALSE}
+
+str(diamonds)
+
+```
+
+```{r, include=FALSE}
+
+help(diamonds)
+
+```
+
+#################################
+## Continue your analysis here ##
+#################################
+
+```{r}
+# check for NA values
+
+colSums(is.na(diamonds))
+
+```
+
+
+## Analysis on individual variables
+I am going to check each individual variable to see where the distributions lie. Some anomolies may be spotted in this initial variable check.
+
+
+```{r}
+# explore price
+
+summary(diamonds$price)
+
+mean_price <- mean(diamonds$price)
+
+greater_mean_price <- diamonds[diamonds$price > mean_price, ]
+lesser_mean_price <- diamonds[diamonds$price < mean_price, ]
+
+ggplot(data = diamonds, aes(price, carat)) +
+  geom_point(aes(color = clarity), size = 0.5) +
+  facet_wrap(. ~ clarity)
+
+ggplot(data = greater_mean_price, aes(price, carat)) +
+  geom_point(aes(color = clarity))
+
+ggplot(data = lesser_mean_price, aes(price, carat)) +
+  geom_point(aes(color = clarity))
+
+print(paste("Diamonds priced at $1500:", nrow(diamonds[diamonds$price == 1500, ])))
+print(paste("Diamonds priced between $1550 & $1545:", nrow(diamonds[diamonds$price >= 1500 & diamonds$price <= 1545, ])))
+
+```
+### Price
+By splitting up the data at the mean price and creating scatterplots, I noticed a gap in price around the $1500 value. By checking the price in that area I found that there are no diamonds priced between $1500 and $1545 which seems unlikely.
+
+
+```{r}
+# explore carat
+
+summary(diamonds$carat)
+
+mean_carat <- mean(diamonds$carat)
+
+lesser_mean_carat <- diamonds[diamonds$carat < mean_carat, ]
+greater_mean_carat <- diamonds[diamonds$carat > mean_carat, ]
+
+ggplot(data = lesser_mean_carat, aes(carat)) +
+  geom_bar(aes(fill = cut))
+
+nrow(diamonds[diamonds$carat < 0.23, ])
+nrow(diamonds[diamonds$carat == 0.23, ])
+carat_low_df <- diamonds[diamonds$carat < 0.23, ]
+
+ggplot(data = carat_low_df, aes(carat, price), size = 2) +
+  geom_jitter(aes(color = cut))
+
+```
+
+### Carat
+While looking into the carat column I noticed that there are only 26 data points for diamonds below 0.23 carat. When you you reach 0.23 carats the number of diamond data points goes up to 293 which is quite a jump. It doesn't mean the data points below 0.23 carats are wrong, but it does mean these data points may want to be looked at through a critical lense.
+
+
+```{r}
+# explore cut
+
+summary(diamonds$cut)
+
+ggplot(data = diamonds, aes(cut)) +
+  geom_bar(aes(fill = clarity))
+
+```
+
+### Cut
+The distributions for the cut of diamonds look good. I don't see anything out of the ordinary.
+
+
+```{r}
+# explore color
+
+summary(diamonds$color)
+
+ggplot(data = diamonds, aes(color)) +
+  geom_bar(aes(fill = clarity))
+
+```
+
+### Color
+The distribution for the color of diamonds looks good. Nothing seems out of the ordinary.
+
+
+```{r}
+# explore clarity
+
+summary(diamonds$clarity)
+
+ggplot(data = diamonds, aes(clarity)) +
+  geom_bar(aes(fill = cut))
+
+best_clarity_df <- diamonds[diamonds$clarity == "IF", ]
+
+ggplot(data = best_clarity_df, aes(cut)) +
+  geom_bar(aes(fill = color))
+
+```
+
+### Clarity
+The distribution of the clarity of diamonds looks good. I pulled out the best clarity diamonds to look at separately. The majority of the best clarity diamonds are also of the best cut and color so the data here looks good.
+
+## Analyzing the diamond measurements
+
+```{r}
+# explore x
+
+summary(diamonds$x)
+
+nrow(diamonds[diamonds$x == 0.0, ])
+zero_x_df <- diamonds[diamonds$x == 0.0, ]
+
+```
+
+```{r}
+# explore y
+
+summary(diamonds$y)
+
+nrow(diamonds[diamonds$y == 0.0, ])
+zero_y_df <- diamonds[diamonds$y == 0.0, ]
+
+```
+
+```{r}
+# explore z
+
+summary(diamonds$z)
+
+nrow(diamonds[diamonds$z == 0.0, ])
+zero_z_df <- diamonds[diamonds$z == 0.0, ]
+
+```
+
+```{r}
+# explore depth
+
+summary(diamonds$depth)
+
+ggplot(data = diamonds, aes(depth, z), size = 0.5) +
+  geom_point(aes(color = cut))
+
+```
+
+```{r}
+# explore table
+
+summary(diamonds$table)
+
+```
+
+## Diamond measurements
+There are 8 data points with a missing length value (x), 7 data points with a missing width value (y), and 20 data points with a missing depth value (z). The depth column which calculates the depth percentage based on the variables x, y, and z also means that 20 data points will not have accurate data. I created a scatterplot looking at the depth percentage against the depth measurement in the z-variable in order to see those data points separated out. The depth percentage of those diamonds would not be correct.
+
+## Analysis looking at variable combinations
+I am going to compare price to other variables. Common sense says that the higher the carat, cut, quality of color, and quality of clarity should result in a higher price.
+
+```{r}
+# price vs carat, cut, color, clarity
+
+ggplot(data = greater_mean_price, aes(price, carat)) +
+  geom_point(aes(color = cut))
+
+ggplot(data = greater_mean_price, aes(price)) +
+  geom_histogram(aes(fill = cut), bins = 90)
+
+ggplot(data = greater_mean_price, aes(price)) +
+  geom_histogram(aes(fill = color), bins = 90)
+
+ggplot(data = greater_mean_price, aes(price)) +
+  geom_histogram(aes(fill = clarity), bins = 90)
+```
+
+## Comparing price to other variables
+I only looked at the data points with prices above the mean price of $3932. When comparing price to carat, the data looks good. The scatterplot shows more data points at the higher carats of diamonds which would coincide with the higher price. When looking at a plot of price vs cut, the distribution is pretty even showing the five different cuts across the entire price spectrum. At the top prices we do see a larger distribution of the top cuts so this coincides. When looking at the scatterplot of price vs diamond color, the distribution is pretty even again showing all color qualities across the price spectrum. However, at the top end of price we see less of the upper and lower color qualities and see mostly the qualities that fall in the middle. I feel like at the higher price point we should see higher color quality as well, but we don't see that. When looking at the scatterplot of price vs clarity, we can again see a distribution that ranges the whole price spectrum. As we see in the color quality, we also see here with clarity. The higher price points don't show a higher distribution of clarity quality. If fact, we see a larger distribution of the lower clarity quality at the higher price which doesn't seem very accurate.
+
+
+```{r}
+# carat vs x, y, z, depth, and table
+
+ggplot(data = greater_mean_carat, aes(carat, x)) +
+  geom_point(aes(color = cut))
+
+ggplot(data = greater_mean_carat, aes(carat, y)) +
+  geom_point(aes(color = cut))
+
+ggplot(data = greater_mean_carat, aes(carat, z)) +
+  geom_point(aes(color = cut))
+
+ggplot(data = greater_mean_carat, aes(carat, depth)) +
+  geom_point(aes(color = cut))
+
+ggplot(data = greater_mean_carat, aes(carat, table)) +
+  geom_point(aes(color = cut))
+```
+
+## Comparing carat to the other diamond measurements
+I only looked at the data points with carat larger than the mean carat value of 0.7979. The carat of the diamond should coorelate to the diamond measurements because the larger the measurements the more the diamond should weigh which is what carat measures. I created scatterplots comparing carat to each of the measurement variables. When looking at the scatterplots for length, width, and depth, we see a positive linear relationship. When the price of the diamond increases it's different measurements also increase. However, we can see the data points where the measurements contain 0.0 data as well as a few other outliers on each plot. Because carat and measurements should coorelate, I think the outliers that we find here have incorrect data. When we look at the scatterplots comparing carat and depth and depth percentage, we see the bulk of the data points around the middle of the depth range. I don't know enough about diamonds to know what this means. 
+
+## Conclusion
+After digging through the diamonds data set, creating visuals to look at each variable and to compare variables, I found that some of the data points are missing measurement values skewing any of the data that relies on that. I found that there is a gap in price between $1500 and $1545, where there are no diamonds priced in that range. With over 50,000 entries it seems unlikely to have such a large gap, but is plausible. Although outliers in and of themselves are not incorrect data, the outliers we see around the measurement data is probably due to inaccuracies. There are also only 26 data points with carat between 0.20 and 0.22, but at 0.23 carats we see 293 data points. Though this is also plausible, some of the carat's at this low end may be inaccurate.
+
+## Appendix
+
+```{r show-code, echo = TRUE, eval = FALSE}
+```
